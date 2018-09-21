@@ -1,4 +1,0 @@
-[
-  "tests/delete_files_recursively_test.py::test_delete_files_recursively",
-  "tests/rename_extensions_test.py::test_rename_extensions"
-]
