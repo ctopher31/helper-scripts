@@ -2,20 +2,24 @@
 import glob, os
 
 #
-# Changes the file extensions of files in a directory
+# Creates csv and sql files from raw txt file data
 #
-# param1: filename with full path
+# param1: txt filename with full path
+# param2: table name
+# param3: comma seperated column names
+# param4: delimeter to use with raw data
+# param5: column types
 #
-def create_insert_from_data(fullpath_filename, table_name, values, delimiter, new_delimiter, column_types):
+def create_insert_from_data(fullpath_filename, table_name, column_names, delimiter, column_types):
     column_types_list = column_types.split(',')
     path = os.path.split(os.path.abspath(fullpath_filename))[0]
     split_filename = os.path.split(os.path.abspath(fullpath_filename))[1].split('.', 1)
-    stripped_fullpath_filename = os.path.join(path, split_filename[0] + '-stripped.' + split_filename[1])
-    new_fullpath_filename = os.path.join(path, split_filename[0] + '-formatted.' + split_filename[1])
+    csv_fullpath_filename = os.path.join(path, split_filename[0] + '.csv')
+    new_fullpath_filename = os.path.join(path, split_filename[0] + '.sql')
 
-    stripped_file = open(stripped_fullpath_filename, 'w')
-    newfile = open(new_fullpath_filename, 'w')
-    newfile.write('INSERT INTO ' + table_name + ' (' + values + ')\nVALUES\n')
+    csv_file = open(csv_fullpath_filename, 'w')
+    sqlfile = open(new_fullpath_filename, 'w')
+    sqlfile.write('INSERT INTO ' + table_name + ' (' + column_names + ')\nVALUES\n')
 
     file = open(fullpath_filename, 'r')
     lines = file.readlines()
@@ -26,25 +30,27 @@ def create_insert_from_data(fullpath_filename, table_name, values, delimiter, ne
             splitlines = str(line).split(delimiter)
             for item in splitlines:
                 if item not in delimiter:
-                    stripped_line = str(item).replace("'", "\\'").replace('"', '\\"').strip()
-                    delimited_line += stripped_line + new_delimiter
+                    csv_line = str(item).replace("'", "\\'").replace('"', '\\"').replace('NULL', '').replace('null', '').strip()
+                    delimited_line += csv_line + ','
 
-            stripped_file.write(delimited_line[:-(len(new_delimiter))] + '\n')
-            newline_items = delimited_line[:-(len(new_delimiter))].split(new_delimiter)
+            csv_file.write(delimited_line[:-1] + '\n')
+            newline_items = delimited_line[:-1].split(',')
             newline = ''
             for index2, newline_item in enumerate(newline_items):
-                if newline_item.lower() == 'null' or column_types_list[index2].lower() == 'int':
-                    newline += newline_item + new_delimiter
+                if newline_item == '':
+                    newline += 'NULL, '
+                elif column_types_list[index2].lower() == 'int':
+                    newline += newline_item + ', '
                 elif column_types_list[index2].lower() == 'string':
-                    newline += '\'' + newline_item + '\'' + new_delimiter
+                    newline += '\'' + newline_item + '\'' + ', '
 
-            newfile.write('(' + newline[:-(len(new_delimiter))] + ')')
-            newfile.write(';\n') if index == len(lines) - 1 else newfile.write(',\n')
-    newfile.write('GO\n')
+            sqlfile.write('(' + newline[:-2] + ')')
+            sqlfile.write(';\n') if index == len(lines) - 1 else sqlfile.write(',\n')
+    sqlfile.write('GO\n')
 
     file.close()
-    newfile.close()
+    sqlfile.close()
 
 if __name__ == '__main__':
     import sys
-    create_insert_from_data(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
+    create_insert_from_data(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
