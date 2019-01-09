@@ -1,4 +1,4 @@
-# clean_os_junk_test.py
+# delete_files_recursively_test.py
 import sys
 import pytest, os
 

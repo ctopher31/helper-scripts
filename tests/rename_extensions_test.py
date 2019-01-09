@@ -1,4 +1,4 @@
-# clean_os_junk_test.py
+# rename_extensions_test.py
 import sys
 import pytest, os
 
