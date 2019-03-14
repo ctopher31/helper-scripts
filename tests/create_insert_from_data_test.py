@@ -1,6 +1,6 @@
 # create_insert_from_data_test
-import sys
-import pytest, os
+import sys, os
+import pytest
 
 sys.path.append('../')
 
@@ -18,7 +18,6 @@ def test_create_insert_from_data():
     created_file = open(os.path.join(os.getcwd(), 'test-data.sql'), 'r')
     lines = created_file.readlines()
     for index, line in enumerate(lines):
-        split_line = line.split(', ')
         if index == 0:
             assert line in 'INSERT INTO dbo.SwatchesToCategories (Id, Name, ProductLineId)\n'
         elif index == 1:

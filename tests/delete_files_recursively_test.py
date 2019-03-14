@@ -1,6 +1,6 @@
 # delete_files_recursively_test.py
-import sys
-import pytest, os
+import sys, os
+import pytest
 
 sys.path.append('../')
 

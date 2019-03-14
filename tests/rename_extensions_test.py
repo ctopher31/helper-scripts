@@ -1,6 +1,6 @@
 # rename_extensions_test.py
-import sys
-import pytest, os
+import os, sys
+import pytest
 
 sys.path.append('../')
 
